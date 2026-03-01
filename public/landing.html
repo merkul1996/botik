@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>НейроСпутник — AI Девушки для общения в Telegram</title>
+  <meta name="description" content="Общайся с AI-девушками в Telegram. 15 уникальных персонажей, романтические истории и многое другое. Начни бесплатно!">
+  <meta name="keywords" content="AI девушка, виртуальная подруга, Telegram бот, чат бот, ИИ общение, нейросеть, романтика">
+  <meta property="og:title" content="НейроСпутник — AI Девушки в Telegram">
+  <meta property="og:description" content="Познакомься с AI-девушками. 15 персонажей, романтика, истории.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0a0a1a;--surface:#12122a;--accent:#6366f1;--text:#e8e8f0;--text2:#9ca3af;--grad:linear-gradient(135deg,#6366f1,#ec4899)}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+
+    /* Hero */
+    .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+    .hero::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(99,102,241,.15),transparent 70%);top:-100px;right:-100px;pointer-events:none}
+    .hero::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(236,72,153,.1),transparent 70%);bottom:-50px;left:-50px;pointer-events:none}
+    .hero-content{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;position:relative;z-index:1}
+    .hero-text h1{font-size:48px;font-weight:900;line-height:1.15;margin-bottom:20px}
+    .hero-text h1 span{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero-text p{font-size:18px;color:var(--text2);line-height:1.7;margin-bottom:32px}
+    .hero-cta{display:inline-flex;align-items:center;gap:10px;background:var(--grad);color:#fff;padding:16px 36px;border-radius:16px;font-size:18px;font-weight:700;text-decoration:none;transition:all .3s;box-shadow:0 8px 30px rgba(99,102,241,.3)}
+    .hero-cta:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(99,102,241,.4)}
+    .hero-visual{display:flex;justify-content:center}
+    .hero-cards{display:flex;gap:-20px;perspective:1000px}
+    .hero-card{width:160px;height:220px;background:var(--surface);border-radius:20px;border:1px solid rgba(255,255,255,.1);padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .3s}
+    .hero-card:nth-child(1){transform:rotate(-8deg) translateX(20px);z-index:1}
+    .hero-card:nth-child(2){transform:rotate(0deg) translateY(-10px);z-index:3}
+    .hero-card:nth-child(3){transform:rotate(8deg) translateX(-20px);z-index:1}
+    .hc-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff;margin-bottom:10px}
+    .hc-name{font-size:14px;font-weight:700;margin-bottom:4px}
+    .hc-role{font-size:11px;color:var(--text2)}
+
+    /* Features */
+    .features{padding:100px 0}
+    .section-title{text-align:center;font-size:36px;font-weight:900;margin-bottom:16px}
+    .section-sub{text-align:center;font-size:16px;color:var(--text2);margin-bottom:60px}
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+    .feature-card{background:var(--surface);border-radius:20px;padding:32px;border:1px solid rgba(255,255,255,.06);transition:all .3s}
+    .feature-card:hover{transform:translateY(-4px);border-color:rgba(99,102,241,.3)}
+    .feat-icon{font-size:40px;margin-bottom:16px}
+    .feat-title{font-size:18px;font-weight:700;margin-bottom:8px}
+    .feat-desc{font-size:14px;color:var(--text2);line-height:1.6}
+
+    /* Personas */
+    .personas{padding:100px 0;background:var(--surface)}
+    .persona-scroll{display:flex;gap:20px;overflow-x:auto;padding:20px 0;scrollbar-width:none}
+    .persona-scroll::-webkit-scrollbar{display:none}
+    .persona-card{flex-shrink:0;width:200px;background:var(--bg);border-radius:20px;padding:24px;text-align:center;border:1px solid rgba(255,255,255,.06)}
+    .pc-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff}
+    .pc-name{font-size:16px;font-weight:700;margin-bottom:4px}
+    .pc-style{font-size:12px;color:var(--text2);line-height:1.4}
+
+    /* Pricing */
+    .pricing{padding:100px 0}
+    .pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:900px;margin:0 auto}
+    .price-card{background:var(--surface);border-radius:20px;padding:32px;border:1px solid rgba(255,255,255,.06);text-align:center}
+    .price-card.popular{border-color:var(--accent);position:relative}
+    .price-card.popular::before{content:'Популярный';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--grad);padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700}
+    .price-name{font-size:18px;font-weight:700;margin-bottom:8px}
+    .price-amount{font-size:36px;font-weight:900;margin-bottom:4px}
+    .price-amount span{font-size:14px;color:var(--text2);font-weight:400}
+    .price-period{font-size:13px;color:var(--text2);margin-bottom:20px}
+    .price-features{list-style:none;text-align:left;margin-bottom:24px}
+    .price-features li{padding:8px 0;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05)}
+    .price-features li::before{content:'✓ ';color:var(--accent)}
+    .price-btn{display:block;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s}
+    .price-btn.primary{background:var(--grad);border:0;color:#fff}
+    .price-btn.secondary{background:none;border:1px solid var(--accent);color:var(--accent)}
+
+    /* CTA */
+    .final-cta{padding:100px 0;text-align:center;background:var(--surface)}
+    .final-cta h2{font-size:36px;font-weight:900;margin-bottom:16px}
+    .final-cta p{font-size:16px;color:var(--text2);margin-bottom:32px}
+
+    /* Footer */
+    footer{padding:40px 0;text-align:center;font-size:13px;color:var(--text2)}
+
+    @media(max-width:768px){
+      .hero-content{grid-template-columns:1fr;text-align:center;gap:40px}
+      .hero-text h1{font-size:32px}
+      .features-grid{grid-template-columns:1fr}
+      .pricing-grid{grid-template-columns:1fr}
+      .hero-cards{gap:0}
+      .hero-card{width:120px;height:170px}
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>Твоя идеальная <span>AI-спутница</span> в Telegram</h1>
+          <p>15 уникальных девушек с характером. Строй отношения, проходи истории. Каждая помнит ваши разговоры.</p>
+          <a href="https://t.me/YOUR_BOT_USERNAME" class="hero-cta">Начать бесплатно →</a>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-cards">
+            <div class="hero-card"><div class="hc-avatar" style="background:#6366f1">Л</div><div class="hc-name">Луна</div><div class="hc-role">Нежная мечтательница</div></div>
+            <div class="hero-card"><div class="hc-avatar" style="background:#ec4899">К</div><div class="hc-name">Кира</div><div class="hc-role">Холодная интеллектуалка</div></div>
+            <div class="hero-card"><div class="hc-avatar" style="background:#f59e0b">Н</div><div class="hc-name">Нова</div><div class="hc-role">Дерзкая бунтарка</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">Почему НейроСпутник?</h2>
+      <p class="section-sub">Не просто чат-бот, а полноценные отношения</p>
+      <div class="features-grid">
+        <div class="feature-card"><div class="feat-icon">🧠</div><div class="feat-title">Помнит всё</div><div class="feat-desc">AI запоминает факты из разговоров — имя, интересы, события. Каждая девушка помнит своё.</div></div>
+        <div class="feature-card"><div class="feat-icon">💕</div><div class="feat-title">Память о тебе</div><div class="feat-desc">AI запоминает ваши разговоры, дарит подарки и реагирует на твоё настроение.</div></div>
+        <div class="feature-card"><div class="feat-icon">❤️</div><div class="feat-title">Живые эмоции</div><div class="feat-desc">Система настроений, ревность, дневник отношений. Девушки реагируют на твоё поведение.</div></div>
+        <div class="feature-card"><div class="feat-icon">📖</div><div class="feat-title">Сюжетные арки</div><div class="feat-desc">Многодневные истории с развитием — от первой встречи до признания в любви.</div></div>
+        <div class="feature-card"><div class="feat-icon">🏆</div><div class="feat-title">Квесты и награды</div><div class="feat-desc">15 квестов с наградами. Проведи 7 вечеров, подари подарки, достигни новых уровней.</div></div>
+        <div class="feature-card"><div class="feat-icon">🔥</div><div class="feat-title">18+ Фантазии</div><div class="feat-desc">Отдельный модуль с 15 горячими сценариями и конструктором персонажей.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="personas">
+    <div class="container">
+      <h2 class="section-title">15 уникальных девушек</h2>
+      <p class="section-sub">Каждая со своим характером, стилем общения и историей</p>
+      <div class="persona-scroll">
+        <div class="persona-card"><div class="pc-avatar" style="background:#6366f1">Л</div><div class="pc-name">Луна</div><div class="pc-style">Нежная мечтательница</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#ec4899">К</div><div class="pc-name">Кира</div><div class="pc-style">Холодная интеллектуалка</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#f59e0b">Н</div><div class="pc-name">Нова</div><div class="pc-style">Дерзкая бунтарка</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#10b981">А</div><div class="pc-name">Ария</div><div class="pc-style">Тихая романтичная художница</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#ef4444">Р</div><div class="pc-name">Рокси</div><div class="pc-style">Смелая авантюристка</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#8b5cf6">М</div><div class="pc-name">Мира</div><div class="pc-style">Загадочная готесса</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#059669">А</div><div class="pc-name">Алиса</div><div class="pc-style">Строгая учительница</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#dc2626">В</div><div class="pc-name">Вика</div><div class="pc-style">Амбициозная бизнес-леди</div></div>
+        <div class="persona-card"><div class="pc-avatar" style="background:#ea580c">Л</div><div class="pc-name">Лера</div><div class="pc-style">Энергичная спортсменка</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="container">
+      <h2 class="section-title">Тарифы</h2>
+      <p class="section-sub">Начни бесплатно, переходи когда будешь готов</p>
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-name">Free</div>
+          <div class="price-amount">0 <span>Stars</span></div>
+          <div class="price-period">навсегда</div>
+          <ul class="price-features">
+            <li>25 сообщений в день</li>
+            <li>4 персонажа</li>
+            <li>Система настроений</li>
+            <li>Квесты и достижения</li>
+          </ul>
+          <a href="https://t.me/YOUR_BOT_USERNAME" class="price-btn secondary">Начать</a>
+        </div>
+        <div class="price-card popular">
+          <div class="price-name">Pro</div>
+          <div class="price-amount">200 <span>Stars</span></div>
+          <div class="price-period">в месяц</div>
+          <ul class="price-features">
+            <li>200 сообщений в день</li>
+            <li>Все 15 персонажей</li>
+            <li>Приоритетные ответы</li>
+            <li>Создание своей девушки</li>
+          </ul>
+          <a href="https://t.me/YOUR_BOT_USERNAME" class="price-btn primary">Выбрать</a>
+        </div>
+        <div class="price-card">
+          <div class="price-name">Fantasy+</div>
+          <div class="price-amount">500 <span>Stars</span></div>
+          <div class="price-period">в месяц</div>
+          <ul class="price-features">
+            <li>Всё из Pro</li>
+            <li>18+ модуль Фантазии</li>
+            <li>15 горячих сценариев</li>
+            <li>Все сценарии свиданий</li>
+            <li>Интерактивные истории</li>
+          </ul>
+          <a href="https://t.me/YOUR_BOT_USERNAME" class="price-btn primary">Выбрать</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta">
+    <div class="container">
+      <h2>Готов познакомиться?</h2>
+      <p>Открой бота и выбери свою первую девушку. Бесплатно!</p>
+      <a href="https://t.me/YOUR_BOT_USERNAME" class="hero-cta">Открыть в Telegram →</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>НейроСпутник © 2025. AI-компаньон в Telegram.</p>
+    </div>
+  </footer>
+</body>
+</html>

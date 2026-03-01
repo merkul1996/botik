@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+    <title>НейроСпутник</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+      :root{
+        color-scheme:dark;
+        --bg:#07090f;--surface:#10131c;--surface-2:#171c2a;--surface-3:#1f2638;
+        --text:#eef1fa;--text-2:#b0b8d0;--muted:#6b7694;
+        --accent:#7c5cff;--accent-2:#9b7eff;--pink:#ff5a8a;--cyan:#22d3ee;
+        --green:#34d399;--orange:#fb923c;--red:#ef4444;
+        --border:rgba(100,115,160,.14);--glow:rgba(124,92,255,.25);
+        --r:14px;--nav-h:56px;
+      }
+      *{box-sizing:border-box;margin:0;padding:0}
+      html,body{min-height:100dvh;background:var(--bg);color:var(--text);
+        font-family:-apple-system,BlinkMacFontFont,"SF Pro","Segoe UI",Roboto,Helvetica,sans-serif;
+        -webkit-font-smoothing:antialiased;overflow-x:hidden}
+      .app{width:100%;max-width:430px;margin:0 auto;
+        padding-bottom:calc(var(--nav-h)+env(safe-area-inset-bottom)+4px);min-height:100dvh;position:relative}
+
+      .header{padding:14px 16px 6px;display:flex;align-items:center;justify-content:space-between}
+      .logo{font-size:18px;font-weight:800;letter-spacing:-.3px}
+      .logo span{background:linear-gradient(135deg,var(--accent),var(--pink));
+        background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+      .hdr-pill{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);
+        border-radius:99px;padding:4px 10px 4px 8px;font-size:11px;color:var(--muted)}
+      .hdr-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(52,211,153,.7)}
+
+      .page{display:none;padding:6px 14px 14px}
+      .page.active{display:flex;flex-direction:column}
+      #pageChat.active{height:calc(100dvh - 46px - var(--nav-h) - env(safe-area-inset-bottom));padding-bottom:0;overflow:hidden}
+      .sec-title{font-size:20px;font-weight:800;margin-bottom:2px}
+      .sec-sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+
+      /* Photo Editor */
+      #pagePhotoEditor.active{overflow-y:auto;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 24px)}
+      .photo-editor-hdr{margin-bottom:20px}
+      .photo-editor-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+      .photo-editor-upload{margin-bottom:24px}
+      .upload-area{border:2px dashed var(--border);border-radius:var(--r);padding:40px 20px;text-align:center;
+        background:var(--surface);transition:all .15s;cursor:pointer}
+      .upload-area:hover{border-color:var(--accent);background:rgba(124,92,255,.05)}
+      .upload-area.dragover{border-color:var(--pink);background:rgba(255,90,138,.1)}
+      .upload-icon{font-size:48px;margin-bottom:12px}
+      .upload-text{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+      .upload-hint{font-size:12px;color:var(--muted)}
+      .preview-area{position:relative;margin-bottom:20px}
+      .preview-image{width:100%;max-height:300px;object-fit:contain;border-radius:var(--r);border:1px solid var(--border)}
+      .change-photo-btn{position:absolute;top:10px;right:10px;border:0;border-radius:50%;background:var(--surface);
+        color:var(--text);width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center:justify-content:center;
+        box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+      .photo-editor-bots{margin-bottom:24px}
+      .bots-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+      .bot-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;
+        cursor:pointer;transition:all .15s;text-align:center}
+      .bot-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+      .bot-card.selected{border-color:var(--pink);background:rgba(255,90,138,.1);box-shadow:0 4px 16px rgba(255,90,138,.2)}
+      .bot-icon{font-size:32px;margin-bottom:8px}
+      .bot-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+      .bot-desc{font-size:11px;color:var(--muted);margin-bottom:8px}
+      .bot-price{font-size:12px;font-weight:700;color:var(--orange)}
+      .bot-free{color:var(--green)}
+      .photo-editor-history{margin-bottom:20px}
+      .history-list{display:flex;flex-direction:column;gap:8px}
+      .history-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px;
+        display:flex;align-items:center;gap:12px}
+      .history-preview{width:60px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0}
+      .history-preview img{width:100%;height:100%;object-fit:cover}
+      .history-info{flex:1;min-width:0}
+      .history-bot{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+      .history-date{font-size:10px;color:var(--muted)}
+      .history-status{font-size:10px;font-weight:700}
+      .history-status.success{color:var(--green)}
+      .history-status.processing{color:var(--orange)}
+      .history-status.error{color:var(--red)}
+
+      /* Nav */
+      .bottom-nav{position:fixed;bottom:0;left:0;right:0;
+        height:calc(var(--nav-h)+env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);
+        background:rgba(7,9,15,.94);backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;z-index:100}
+      .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+        gap:2px;color:var(--muted);font-size:9px;cursor:pointer;border:0;background:transparent;
+        -webkit-tap-highlight-color:transparent;transition:color .15s}
+      .nav-btn.on{color:var(--accent-2)}
+      .nav-ic{font-size:20px;line-height:1}
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div id="pagePhotoEditor" class="page active">
+        <div class="photo-editor-hdr">
+          <div class="sec-title">Редактор фото</div>
+          <div class="photo-editor-sub">Выбери нейросеть для обработки фото</div>
+        </div>
+        
+        <div class="photo-editor-upload">
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📸</div>
+            <div class="upload-text">Загрузи фото</div>
+            <div class="upload-hint">JPG, PNG до 10MB</div>
+            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+          </div>
+          <div id="previewArea" class="preview-area" style="display: none;">
+            <img id="previewImage" class="preview-image">
+            <button id="changePhotoBtn" class="change-photo-btn">🔄 Изменить фото</button>
+          </div>
+        </div>
+
+        <div class="photo-editor-bots">
+          <div class="sec-title">Нейросети</div>
+          <div class="bots-grid" id="botsGrid">
+            <!-- Боты будут загружены через JavaScript -->
+          </div>
+        </div>
+
+        <div class="photo-editor-history">
+          <div class="sec-title">История обработок</div>
+          <div class="history-list" id="historyList">
+            <!-- История будет загружена через JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <nav class="bottom-nav">
+        <button class="nav-btn on" data-page="pageCharacters"><span class="nav-ic">👥</span><span>Девушки</span></button>
+        <button class="nav-btn" data-page="pageDating"><span class="nav-ic">💕</span><span>Игры</span></button>
+        <button class="nav-btn" data-page="pageFantasy"><span class="nav-ic">🔥</span><span>18+</span></button>
+        <button class="nav-btn" data-page="pagePhotoEditor"><span class="nav-ic">🎨</span><span>Фото</span></button>
+        <button class="nav-btn" data-page="pageChat"><span class="nav-ic">💬</span><span>Чат</span></button>
+        <button class="nav-btn" data-page="pageProfile"><span class="nav-ic">👤</span><span>Профиль</span></button>
+      </nav>
+    </div>
+    <script>
+      // Инициализация Photo Editor
+      const uploadArea = document.getElementById('uploadArea');
+      const photoInput = document.getElementById('photoInput');
+      const previewArea = document.getElementById('previewArea');
+      const previewImage = document.getElementById('previewImage');
+      const changePhotoBtn = document.getElementById('changePhotoBtn');
+      const botsGrid = document.getElementById('botsGrid');
+      const historyList = document.getElementById('historyList');
+
+      // Список нейросетей для обработки фото
+      const bots = [
+        {
+          id: 'nudevision',
+          name: 'NudeVision',
+          icon: '🎭',
+          desc: 'Удаление одежды с фото',
+          price: 'Бесплатно',
+          free: true,
+          url: 'https://t.me/NudeVisionBot?start=u_1dE100'
+        },
+        {
+          id: 'smartnudes',
+          name: 'Smart Nudes',
+          icon: '🤖',
+          desc: 'Нейросеть по удалению одежды',
+          price: 'от 80 руб',
+          free: false,
+          url: 'https://t.me/SmartNudesBot?start=954291600'
+        },
+        {
+          id: 'nuroom',
+          name: 'NuRoom',
+          icon: '🏠',
+          desc: 'Раздевание по фото',
+          price: 'от 75 руб',
+          free: false,
+          url: 'https://t.me/nuroom_bot?start=954291600_50'
+        },
+        {
+          id: 'nutiffany',
+          name: 'NuTiffany',
+          icon: '💎',
+          desc: 'Качественное раздевание',
+          price: 'от 49 руб',
+          free: false,
+          url: 'https://t.me/NuTiffany_bot?start=954291600_50'
+        },
+        {
+          id: 'razdevalnik',
+          name: 'Раздевальник',
+          icon: '🔥',
+          desc: 'Разденет любую девушку',
+          price: 'от 75 руб',
+          free: false,
+          url: 'https://t.me/coupon50_discount_bot?start=954291600'
+        },
+        {
+          id: 'perfectpower',
+          name: 'PerfectPower',
+          icon: '⚡',
+          desc: 'Две нейросети в одном',
+          price: 'от 99 руб',
+          free: false,
+          url: 'https://t.me/neuronud_bot?start=954291600_50'
+        }
+      ];
+
+      // Загрузка фото
+      uploadArea.addEventListener('click', () => {
+        photoInput.click();
+      });
+
+      changePhotoBtn.addEventListener('click', () => {
+        previewArea.style.display = 'none';
+        uploadArea.style.display = 'block';
+        photoInput.value = '';
+      });
+
+      photoInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            previewImage.src = e.target.result;
+            uploadArea.style.display = 'none';
+            previewArea.style.display = 'block';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Drag and Drop
+      uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+          photoInput.files = e.dataTransfer.files;
+          const event = new Event('change', { bubbles: true });
+          photoInput.dispatchEvent(event);
+        }
+      });
+
+      // Отрисовка ботов
+      function renderBots() {
+        botsGrid.innerHTML = bots.map(bot => `
+          <div class="bot-card" data-bot-id="${bot.id}">
+            <div class="bot-icon">${bot.icon}</div>
+            <div class="bot-name">${bot.name}</div>
+            <div class="bot-desc">${bot.desc}</div>
+            <div class="bot-price ${bot.free ? 'bot-free' : ''}">${bot.price}</div>
+          </div>
+        `).join('');
+
+        // Добавляем обработчики кликов
+        document.querySelectorAll('.bot-card').forEach(card => {
+          card.addEventListener('click', () => {
+            document.querySelectorAll('.bot-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            
+            const botId = card.dataset.botId;
+            const bot = bots.find(b => b.id === botId);
+            if (bot) {
+              // Здесь можно добавить логику обработки фото
+              alert(`Выбрана нейросеть: ${bot.name}\n${bot.url}`);
+            }
+          });
+        });
+      }
+
+      // Загрузка истории обработок
+      function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('photoEditorHistory') || '[]');
+        historyList.innerHTML = history.map(item => `
+          <div class="history-item">
+            <div class="history-preview">
+              <img src="${item.preview}" alt="Preview">
+            </div>
+            <div class="history-info">
+              <div class="history-bot">${item.botName}</div>
+              <div class="history-date">${new Date(item.date).toLocaleDateString()}</div>
+            </div>
+            <div class="history-status ${item.status}">${item.status}</div>
+          </div>
+        `).join('');
+      }
+
+      // Инициализация
+      renderBots();
+      loadHistory();
+
+      // Обработка навигации
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const page = btn.dataset.page;
+          if (page === 'pagePhotoEditor') {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(page).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+            btn.classList.add('on');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
